@@ -1,31 +1,71 @@
 //1) Реализовать метод flat для MyArray (сделать как точную копию метода flat у Array; Использовать рекурсию; Пример у вас есть в репозитории с урока.)
 
-// function customFlat(array, depth = 1) {
 
-// 	if (depth < 0) {
-// 		console.error("depth must be a positive value");
-// 		return;
-// 	}
+function ArrayMethods() {
+	this.push = function () {
+		for (let i = 0; i < arguments.length; i++) {
+			this[this.length++] = arguments[i];
+		}
+		return this.length;
+	};
+	this.pop = function () {
+		const lastIndex = this.length - 1;
+		const lastItem = this[lastIndex];
 
-// 	let newArr = [];
+		delete this[lastIndex];
 
-// 	if (depth === 0) {
-// 		newArr = newArr.concat(array);
-// 		return array;
-// 	}
-// 	for (let i = 0; i < array.length; i++) {
-// 		if (Array.isArray(array[i])) {
+		--this.length;
 
-// 			const buffer = customFlat(array[i], depth - 1);
+		return lastItem;
+	};
+	this.forEach = function (callback) {
+		for (let i = 0; i < this.length; i++) {
+			callback(this[i], i, this);
+		}
+	};
+	this.concat = function (array) {
+		let result = new MyArray();
+		for (let i = 0; i < this.length; i++) {
+			result.push(this[i]);
+		}
+		for (let i = 0; i < this.length; i++) {
+			result.push(array[i]);
+		}
+		return result;
+	};
+	this.flat = function (depth = 1) {
+		if (depth < 0) {
+			console.error("depth must be a positive value");
+			return;
+		}
+		let newArr = new MyArray();
+		if (depth === 0) {
+			return this;
+		}
+		for (let i = 0; i < this.length; i++) {
+			if (Array.isArray(this[i])) {
+				const buffer = this[i].flat(depth - 1);
 
-// 			newArr = newArr.concat(buffer);
+				newArr = newArr.concat(buffer);
+			} else if (this[i] !== undefined) {
+				newArr.push(this[i]);
+			}
+		}
+		return newArr;
+	};
+}
 
-// 		} else {
-// 			newArr.push(array[i]);
-// 		}
-// 		return newArr;
-// 	}
-// }
+function MyArray() {
+	this.length = 0;
+	for (let i = 0; i < arguments.length; i++) {
+		this[this.length] = arguments[i];
+		this.length++;
+	}
+}
+
+MyArray.prototype = new ArrayMethods();
+
+const myArr = new MyArray('test', undefined, undefined, undefined, undefined, [[[[[5]]]]]);
 
 //=================================================================================
 
@@ -59,20 +99,23 @@
 //=================================================================================
 
 // 3) Написать функцию logParenthis используя массивы, а не шаблонные строки.
-// logParenthis (3) // ((()))
 
-// let arr = [];
+function logPar(sumElements) {
+	let logParenthisArr = [];
 
-// function logParenthis(number) {
-// 	if (number > 0) {
-// 		arr.unshift("(");
-// 		logParenthis(number - 1);
-// 		arr.push(")");
-// 	}
-// 	return arr.join("");
-// }
+	logParenthis(sumElements);
 
-// logParenthis(5);
+	function logParenthis(number) {
+
+		if (number > 0) {
+			logParenthisArr = [...logParenthisArr, "("];
+			logParenthis(number - 1);
+			logParenthisArr = [...logParenthisArr, ")"];
+		}
+	}
+	return logParenthisArr.join("");
+}
+logPar(5);
 
 //=================================================================================
 
